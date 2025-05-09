@@ -1,5 +1,8 @@
-use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{ web, App, HttpServer};
 use std::sync::Mutex;
+
+mod utils;
+mod routes;
 
 // This struct represents state
 struct AppStateWithCounter {
@@ -13,13 +16,6 @@ async fn index(data: web::Data<AppStateWithCounter>) -> String {
     format!("Request number: {counter}") // <- response with count
 }
 
-#[get("/hello/{name}")]
-async fn greet(name: web::Path<String>) -> impl Responder {
-    format!("Hello {name}!")
-}
-async fn manual_hello() -> impl Responder {
-    HttpResponse::Ok().body("Hey there cool guy")
-}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -38,16 +34,20 @@ async fn main() -> std::io::Result<()> {
         counter: Mutex::new(0),
     });
 
+    let port = (*utils::constants::PORT).clone();
+    let address = (*utils::constants::ADDRESS).clone();
+
     HttpServer::new(move || {
         // move counter into the closure
         App::new()
             .wrap(actix_web::middleware::Logger::default())
-            .service(greet)
+            .configure(routes::home_routes::config)
+
             .app_data(counter.clone()) // <- register the created data
             .route("/", web::get().to(index))
-            .route("/hi",web::get().to(manual_hello))
+            
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind((address, port))?
     .run()
     .await
 }
