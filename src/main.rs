@@ -23,13 +23,15 @@ async fn manual_hello() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    unsafe{
+    
+    unsafe{ //logs incoming request info
         if std::env::var_os("RUST_LOG").is_none() {
             std::env::set_var("RUST_LOG", "actix_web=info");
         }
     }
-    dotenv::dotenv().ok();
-    env_logger::init();
+
+    dotenv::dotenv().ok();  //dot env init
+    env_logger::init();     //env var logger init
 
     // Note: web::Data created _outside_ HttpServer::new closure
     let counter = web::Data::new(AppStateWithCounter {
