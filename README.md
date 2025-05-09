@@ -4,4 +4,6 @@ Current features:
   - main page with app state counter
   - manually routed /hello page
   - logs for each request
-  - greet function that displays specified nameS
+  - greet function that displays specified names
+  - seperated into modules
+  - added api stuff
